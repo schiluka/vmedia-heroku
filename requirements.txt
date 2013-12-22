@@ -6,3 +6,4 @@ requests==0.14.2
 wsgiref==0.1.2
 peewee==2.0.0
 gunicorn==0.17.2
+MySQL-python==1.2.3
