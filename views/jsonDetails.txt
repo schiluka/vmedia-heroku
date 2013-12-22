@@ -1,0 +1,46 @@
+First you login with "/login" - need to decide yet what to send
+(input - uname and password)
+=========
+then call "/getLabels" to load the drop downs
+(input - nothing)
+Output
+[{"category": "Coverage", "label": "C1"}, {"category": "Coverage", "label": "C2"}, {"category": "Coverage", "label": "C3"}, {"category": "Pass", "label": "P1"}, {"category": "Pass", "label": "P2"}, {"category": "Series", "label": "S1"}, {"category": "Series", "label": "S2"}, {"category": "Series", "label": "S3"}]
+========
+Then call "/getVideos" to get a list of videos.
+For this you will get a list of videos (may be 10 at a time), then you would iterate over them in Next button. Once all of them are over, call this again to get next 10 videos.
+(input nothing)
+
+output
+{"result": "OK", "videos": [{"boxLink": "https://box.com/s/abc.mp4", "folderName": "Game234", "videoId": "1", "fileName": "abc.mp4"}, {"boxLink": "https://box.com/s/abc2.mp4", "folderName": "Game234", "videoId": "2", "fileName": "abc2.mp4"}, {"boxLink": "https://box.com/s/abc3.mp4", "folderName": "Game23", "videoId": "3", "fileName": "abc3.mp4"}]}
+
+You will show file name and folder name on top of video
+
+=====================
+
+Once the labels are selected and submitted, call "/saveVideo"
+
+input
+input = {"videoId":"2", "labels": [
+
+        { "Category":"Coverage" , "Label":"C1" },
+
+        { "Category":"Pass" , "Label":"P2" },
+
+        { "Category":"Series" , "Label":"S3" }
+
+    ]}
+
+Output is a string like
+"Labels saved"
+
+==============
+When a new label is created, call "/saveLabel"
+
+input
+ {"category":"Coverage", "label":"C3"}
+
+Output is a string
+there will be no server call on add category
+===============
+
+Ping me tomorrow if you have any doubts.

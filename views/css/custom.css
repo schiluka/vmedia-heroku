@@ -1,0 +1,45 @@
+.zeroMargin{margin: 0 !important}
+.zeroPadding{padding: 0 !important; border: 0}
+.actionButtons{margin-top: 10px} 
+#test .actionButtons{margin-top: 10px; clear: both; overflow: hidden; margin-left: 15px;float: left}
+.mLeft{margin-left: 10px}
+.footer{margin-top: 30px; text-align: center}
+.labelPopup{padding: 0 0 10px 14px; text-align: left !important}
+.navbar-brand{font-family: trebuchet MS; font-weight: bold; font-size: 27px;}
+
+
+#heroCarouselContainer.wrapper {
+				width: 700px;
+			}
+			#heroCarouselContainer.list_carousel {
+				width: 700px;
+			}
+			#heroCarouselContainer.list_carousel ul {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+				display: block;
+			}
+			#heroCarouselContainer.list_carousel ul li {
+				width: 700px;
+				height: 450px;
+				padding: 0;
+				display: block;
+				float: left;
+			}
+			#heroCarouselContainer.list_carousel.responsive {
+				width: auto;
+				margin-left: 0;
+			}
+			#heroCarouselContainer .clearfix {
+				float: none;
+				clear: both;
+			}
+			#heroCarouselContainer .prev {
+				float: left;
+				margin-left: 10px;
+			}
+			#heroCarouselContainer .next {
+				float: right;
+				margin-right: 10px;
+			}
