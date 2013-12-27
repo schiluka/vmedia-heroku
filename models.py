@@ -57,10 +57,5 @@ class Video(Model):
         )
 
 # when you're ready to start querying, remember to connect
-myDB.connect()
 
-Label.create_table(True)
-User.create_table(True)
-Video.create_table(True)
-Folder.create_table(True)
 print 'db connect and tables created'

@@ -1,19 +1,22 @@
 import os
-from flask import Flask, redirect, request, session, url_for, jsonify, send_file, make_response
+from flask import Flask, redirect, request, session, url_for, jsonify, send_file, make_response, render_template
 import requests
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
 from functools import wraps
-from models import User, Label, Video, Folder
+from models import User, Label, Video, Folder, myDB
 
 #app = Flask(__name__)#
-ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), './views')
-app = Flask(__name__, template_folder=ASSETS_DIR, static_folder=ASSETS_DIR)
+#ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), './views')
+#app = Flask(__name__, template_folder=ASSETS_DIR, static_folder=ASSETS_DIR)
+
+#ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), './views')
+app = Flask(__name__)
 
 BASE_URL = 'https://api.box.com/'
-indexHtml = open('views/index.html').read()
+#indexHtml = open('views/index.html').read()
 
 LOG_FILENAME = './vm.log'
 
@@ -27,9 +30,27 @@ handler = logging.handlers.RotatingFileHandler(
 
 app.logger.addHandler(handler)
 
+@app.before_request
+def before_request():
+    myDB.connect()
+    Label.create_table(True)
+    User.create_table(True)
+    Video.create_table(True)
+    Folder.create_table(True)
+
+@app.teardown_request
+def teardown_request(exception):
+    print 'closing connection'
+    myDB.close()
+
 @app.route('/login2')
 def index2():
-    return make_response(open('views/index.html').read())
+    print 'login2 called'
+    return render_template('index.html')
+
+#@app.route('/home')
+#def index2():
+#    return send_file('templates/home.html')
 
 def requires_auth(func):
     #Checks for OAuth credentials in the session#
@@ -183,12 +204,53 @@ def saveVideo():
 @app.route('/getVideos')
 def getVideos():
     #Sending Videos#
-    input = {"result":"OK", "videos": [
-        { "videoId":"1" , "fileName":"abc.mp4", "boxLink":"https://box.com/s/abc.mp4", "folderName":"Game234" },
-        { "videoId":"2" , "fileName":"abc2.mp4", "boxLink":"https://box.com/s/abc2.mp4", "folderName":"Game234" },
-        { "videoId":"3" , "fileName":"abc3.mp4", "boxLink":"https://box.com/s/abc3.mp4", "folderName":"Game23" }
-    ]}
-    return json.dumps(input)
+    #input = {"result":"OK", "videos": [
+    #    { "videoId":"1" , "fileName":"abc.mp4", "boxLink":"https://box.com/s/abc.mp4", "folderName":"Game234" },
+    #    { "videoId":"2" , "fileName":"abc2.mp4", "boxLink":"https://box.com/s/abc2.mp4", "folderName":"Game234" },
+    #    { "videoId":"3" , "fileName":"abc3.mp4", "boxLink":"https://box.com/s/abc3.mp4", "folderName":"Game23" }
+    #]}
+    #return json.dumps(input)
+
+    #Check if there are any files with not DONE status
+    #If so, return those file details
+    print 'getVideos called'
+    videos = []
+    videosInDb = 'True'
+
+    try:
+        #for record in Video.select().where(Video.status == 'N').get():
+        for record in Video.raw("select * from vm_videos where status='N'"):
+            videos.append({'videoId':record.videoId, 'fileName':record.fileName,
+                       'folderName':record.folderName, 'boxLink':record.boxLink})
+        #print videos
+        if len(videos) > 0:
+            print str(videos)
+            responseJson = {'result':'OK', 'videos':videos}
+            #return jsonify(results = videos)
+            return jsonify(results = responseJson)
+    except Video.DoesNotExist:
+        videosInDb = 'False'
+
+    """api_response = getBoxFolder('1311201105')
+    #If no files in the table, get it from Box
+    items = api_response.json['item_collection']
+    filesResponse = []
+    for record in items['entries']:
+        folderId = record['id']
+        count = Video.select().where(Video.folderId == folderId).count()
+        if count >= 1:
+            continue
+        else:
+            #Call file API, insert them into Videos table and return those details
+            files = getBoxFolder(folderId)
+            fileItems = files.json['item_collection']['entries']
+            for rs in fileItems:
+                print rs['name']
+                print rs['id']
+            filesResponse.append(fileItems)
+            return jsonify(results=filesResponse)
+    """
+    return 'No New Videos'
 
 @app.route('/insertVideo')
 def insertVideo():
@@ -223,6 +285,7 @@ def getLabels():
     labels = []
     for label in Label.select():
         labels.append({'category':label.category, 'label':label.label})
+    print str(labels)
     return json.dumps(labels)
 
 @app.route('/saveUser')
@@ -241,12 +304,13 @@ def saveUser():
 def logout():
     #write tokens back to file #
     session.clear()
+    myDB.close()
     return 'You are now logged out of your Box account.'
 
 # OAuth 2 Methods
 
 @app.route('/getFileDetails')
-@requires_auth
+#@requires_auth
 def getFileDetails():
     #Check if there are any files with not DONE status
     #If so, return those file details
@@ -264,7 +328,7 @@ def getFileDetails():
     except Video.DoesNotExist:
         videosInDb = 'False'
 
-    api_response = getBoxFolder('1311201105')
+    """api_response = getBoxFolder('1311201105')
     #If no files in the table, get it from Box
     items = api_response.json['item_collection']
     filesResponse = []
@@ -282,7 +346,7 @@ def getFileDetails():
                 print rs['id']
             filesResponse.append(fileItems)
             return jsonify(results=filesResponse)
-
+    """
     return 'No New Videos'        #Insert here
 
 def oauth_credentials_are_expired():

@@ -1,0 +1,126 @@
+	<div class='pageContent row zeroMargin ' ng-controller="HomeController">
+		<div class='col-md-8 well'>
+			<div class="caption">
+					<div id='heroCarouselContainer' class='wrapper list_carousel'>
+						<ul id='heroCarousel'>
+							<li ng-repeat="v in vData">
+								<h4>{{v.folderName}} - {{v.fileName}} </h4>
+								<video videoId={{v.videoId}} width="720" height="400"
+									src={{v.boxLink}} type="video/mp4" controls>
+								</video>
+							</li>
+						</ul>
+					</div>
+			</div>
+			<div class='actionButtons'>
+				<button  id="prev2" class="hide btn btn-small btn-primary pull-left" data-original-title="">Previous</button>
+
+				<div class='pull-right showToolTip'>
+					<button id="next2" class="btn btn-small btn-primary pull-right disabled" >Next</button>
+				</div>
+				<div class="tooltip">
+						<div class="tooltip-inner">Submit the label to see the next video!</div>
+							<div class="tooltip-arrow"></div>
+						</div>
+			</div>
+
+		</div>
+		<div class='col-md-3 well' style='float:right; width: 30% !important; padding-top: 0'>
+			<h4>&nbsp;</h4>
+			<div class="alert alert-info" ng-show="selectOneCategory">
+				<p>Select atleast one category</p>
+			</div>
+			<div class="alert alert-info saveLabelMsg" ng-show="saveLabelMsg">
+				<p>Label Saved.</p>
+			</div>
+			<form role="form" id='test'>
+				<div class="form-group col-sm-6" ng-repeat="mySelect in selectJSON">
+					<label for="exampleInputEmail1" class="control-label" style='display: inline; padding-bottom: 3px;float: left'>{{mySelect.label}}:</label>
+					<div class="col-sm-12" style='padding: 0; clear: both'>
+						<select id='cf-{{mySelect.id}}' name='{{mySelect.label}}' class="form-control">
+							<option value="">Select</option>
+							<option ng-repeat='cc in mySelect.optionValues' value='{{cc.value}}'>{{cc.value}}</option>
+						</select>
+					</div>
+				</div>
+
+				<div class='actionButtons'>
+					<button id="btnLabel" ng-click='addLabel()' class="btn btn-small btn-primary pull-right mLeft" data-original-title="">Add new Label</button>
+					<button id="btnCategory" ng-click='addCategory()' class="btn btn-small btn-primary pull-right" data-original-title="">Add new Category</button>
+					<button  ng-click='applyLabel()' class="bigBtn btn btn-small btn-primary pull-left" data-original-title="">Apply Label</button>
+				</div>
+
+			</form>
+		</div>
+		<!-- Model popup -->
+			<div class="modal fade" id="labelModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				  <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Add new Label</h4>
+				  </div>
+				  <div class="modal-body">
+					<div class="alert alert-warning" ng-show="displayErrorMsg">
+						<p>Label name already exists for this category. Please choose another.</p>
+					</div>
+					<div class="alert alert-warning" ng-show="displayChooseOptionErrorMsg">
+						<p>Choose atleast one label.</p>
+					</div>
+					<form role="form" class='form-horizontal'>
+						<div class='row'>
+							<div class='col-sm-6'>
+								<div class="form-group">
+									<label for="exampleInputEmail1" class="col-sm-5 control-label labelPopup" style='padding-right: 0'>Label Name:</label>
+									<div class="col-sm-7" style='padding-left: 0'>
+										<input id="txtModalLabel" type="text" class="form-control" ng-model="labelName"/>
+									</div>
+								</div>
+							</div>
+							<div class='col-sm-6'>
+								<div class="form-group">
+									<label for="exampleInputEmail1" class="col-sm-4 control-label">Select:</label>
+									<div class="col-sm-8">
+										<select class="form-control" ng-model='myLabels.selectedValue' ng-options="myLabels.label for myLabels in selectJSON">
+												<option value='' selected>choose</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button id="btnSaveLabel" type="button" class="btn btn-primary" ng-click='saveLabel()'>Save changes</button>
+				  </div>
+				</div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+			<div class="modal fade" id="categoryModal" role="dialog"
+				aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+				  <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Add new Category</h4>
+				  </div>
+				  <div class="modal-body">
+					<div class="alert alert-warning" ng-show="displayCategoryErrorMsg">
+						<p>Category name already exists. Please choose another.</p>
+					</div>
+					<div class="alert alert-warning" ng-show="displayEnterCategoryErrorMsg">
+						<p>Please enter category.</p>
+					</div>
+					<form>
+						Category Name : <input id="txtModalCategory" type="text" ng-model='addNewCategory' class="form-control" style='margin-top: 10px;' />
+					<form>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button id="btnSaveCategory" type="button" class="btn btn-primary" ng-click='saveCategory()'>Save changes</button>
+				  </div>
+				</div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+	  </div>
