@@ -89,7 +89,7 @@ function HomeController($scope,$rootScope, $http){
 	}
 	$scope.currentvideoId = 0;
 	function procesVideos(responseData){
-		$scope.vData = responseData.videos;
+		$scope.vData = responseData.results.videos;
 		$scope.totalVideos = $scope.vData.length;
 		//$scope.vData = responseData;
 		//$scope.totalVideos = $scope.vData.length;
@@ -160,7 +160,7 @@ function HomeController($scope,$rootScope, $http){
 
 		if($scope.displayErrorMsg === false){
 			var getSelectedId = $scope.myLabels.selectedValue.id;
-			$scope.selectJSON[getSelectedId - 1].optionValues.push(newLable);
+			$scope.selectJSON[getSelectedId].optionValues.push(newLable);
 			$('#labelModal').modal('hide');
 			var newLabelData = {
 				"category": $scope.myLabels.selectedValue.label,
@@ -176,7 +176,7 @@ function HomeController($scope,$rootScope, $http){
 		$scope.displayEnterCategoryErrorMsg = false;
 		var selectBoxObj = {
 			"label" : $scope.addNewCategory,
-			"id" : $scope.selectJSON.length + 1,
+			"id" : $scope.selectJSON.length,
 			"optionValues" :[]
 		};
 
