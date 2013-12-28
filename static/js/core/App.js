@@ -215,6 +215,7 @@ function HomeController($scope,$rootScope, $http){
 
 		}else{
 			var formData = $("#test").serializeArray();
+			$scope.currentvideoId = $("#heroCarousel li:first").find('video').attr('videoId');
 			console.log($scope.currentvideoId);
 			var forminputData = {
 				"videoId" : $scope.currentvideoId,
