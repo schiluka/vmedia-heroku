@@ -30,18 +30,14 @@ handler = logging.handlers.RotatingFileHandler(
 
 app.logger.addHandler(handler)
 
-@app.before_request
+"""@app.before_request
 def before_request():
     myDB.connect()
-    Label.create_table(True)
-    User.create_table(True)
-    Video.create_table(True)
-    Folder.create_table(True)
 
 @app.teardown_request
 def teardown_request(exception):
     print 'closing connection'
-    myDB.close()
+    myDB.close()"""
 
 @app.route('/login2')
 def index2():
@@ -180,25 +176,30 @@ def getBoxFolder(folder_id):
     api_response = requests.get(url, headers=auth_header)
     return api_response
 
-@app.route('/saveVideo')
+@app.route('/saveVideo', methods=['POST'])
 def saveVideo():
     #Saving Video#
-    input = {"videoId":"2", "labels": [
-        { "Category":"Coverage" , "Label":"C1" },
-        { "Category":"Pass" , "Label":"P2" },
-        { "Category":"Series" , "Label":"S3" }
-    ]}
-    #Get all the label ids here#
-    labels = input['labels']
-    commaLabelIds = ""
-    for record in labels:
-        oneLabel = Label.select().where((Label.category == record['Category'])
-                           & (Label.label == record['Label'])).get()
-        commaLabelIds = commaLabelIds + str(oneLabel.labelId) + ','
-    video = Video.select().where(Video.videoId == input['videoId']).get()
-    video.labelIds = commaLabelIds[:-1]
-    video.status = 'DONE'
-    video.save()
+    print 'saveVideo called'
+    try:
+        myDB.connect()
+        record = json.loads(request.data)
+        #Get all the label ids here#
+        labels = record['labels']
+        videoId = record['videoId']
+        commaLabelIds = ""
+        for record in labels:
+            oneLabel = Label.select().where((Label.category == record['name'])
+                               & (Label.label == record['value'])).get()
+            commaLabelIds = commaLabelIds + str(oneLabel.labelId) + ','
+        video = Video.select().where(Video.videoId == videoId).get()
+        video.labelIds = commaLabelIds[:-1]
+        video.status = 'Y'
+        video.save()
+        myDB.close()
+    except Exception as e:
+        myDB.close()
+        traceback.print_exc(file=sys.stdout)
+        return 'Save Video Error', 404
     return 'Video/Labels saved'
 
 @app.route('/getVideos')
@@ -216,6 +217,7 @@ def getVideos():
     print 'getVideos called'
     videos = []
     videosInDb = 'True'
+    myDB.connect()
 
     try:
         #for record in Video.select().where(Video.status == 'N').get():
@@ -250,6 +252,7 @@ def getVideos():
             filesResponse.append(fileItems)
             return jsonify(results=filesResponse)
     """
+    myDB.close()
     return 'No New Videos'
 
 @app.route('/insertVideo')
@@ -259,21 +262,29 @@ def insertVideo():
               "boxLink":"asjdksj",
               "folderName":"Game2123",
               "folderId":"12344522"}
+    myDB.connect()
     video = Video.create(
                          fileName=record['fileName'],
                          boxLink=record['boxLink'],
                          folderName=record['folderName'],
                          folderId=record['folderId'])
+    myDB.close()
     return 'video saved'
 
-@app.route('/saveLabel')
+@app.route('/saveLabel', methods=['POST'])
 def saveLabel():
     #Saving Label#
-    record = {"category":"Coverage", "label":"C3"}
+    print 'saveLabel is called'
+    print request.data
+    #print request.form['category']
+    #print request.form['label']
+    myDB.connect()
+    record = json.loads(request.data)
     user = Label.create(
-        category=record["category"],
-        label=record["label"]
+        category=record['category'],
+        label=record['label']
     )
+    myDB.close()
     return 'Label saved'
 
 @app.route('/getLabels')
@@ -283,14 +294,17 @@ def getLabels():
     app.logger.info(str(datetime.now())
                     + '- /getLabels called')
     labels = []
+    myDB.connect()
     for label in Label.select():
         labels.append({'category':label.category, 'label':label.label})
     print str(labels)
+    myDB.close()
     return json.dumps(labels)
 
 @app.route('/saveUser')
 def saveUser():
     #Saving User#
+    myDB.connect()
     record = {"username":"vmuser", "password":"pass01", "email":"", "join_date":""}
     user = User.create(
         username=record["username"],
@@ -298,13 +312,14 @@ def saveUser():
         email=record["email"],
         join_date=datetime.now()
     )
+    myDB.close()
     return 'User saved'
 
 @app.route('/logout')
 def logout():
     #write tokens back to file #
     session.clear()
-    myDB.close()
+    #myDB.close()
     return 'You are now logged out of your Box account.'
 
 # OAuth 2 Methods
@@ -316,7 +331,7 @@ def getFileDetails():
     #If so, return those file details
     videos = []
     videosInDb = 'True'
-
+    myDB.connect()
     try:
         #for record in Video.select().where(Video.status == 'N').get():
         for record in Video.raw("select * from vm_videos where status='N'"):
@@ -347,6 +362,7 @@ def getFileDetails():
             filesResponse.append(fileItems)
             return jsonify(results=filesResponse)
     """
+    myDB.close()
     return 'No New Videos'        #Insert here
 
 def oauth_credentials_are_expired():
@@ -417,4 +433,12 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.debug = False
     app.secret_key = '12345abcde'
+
+    myDB.connect()
+    Label.create_table(True)
+    User.create_table(True)
+    Video.create_table(True)
+    Folder.create_table(True)
+    myDB.close()
+
     app.run(host='localhost', port=port)
