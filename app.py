@@ -350,7 +350,7 @@ def searchVideos():
         csvLabels = ",".join([str(x) for x in labelArray])
 
         #for record in Video.select().where(Video.status == 'N').get():
-        for record in Video.select().where(Video.labelIds ** ('%' + csvLabels + '%')):
+        for record in Video.select().where(Video.labelIds % ('%' + csvLabels + '%')):
             videos.append({'videoId':record.videoId, 'fileName':record.fileName,
                        'folderName':record.folderName, 'boxLink':record.boxLink})
         #print videos
