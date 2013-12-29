@@ -10,9 +10,11 @@
 
 #heroCarouselContainer.wrapper {
 				width: 700px;
+				height: 450px;
 			}
 			#heroCarouselContainer.list_carousel {
 				width: 700px;
+				height: 450px;
 			}
 			#heroCarouselContainer.list_carousel ul {
 				margin: 0;
@@ -48,15 +50,18 @@
 #searchResults li{float: left; border: 1px solid #ccc;margin-left: 10px; margin-bottom: 5px; padding: 0}
 #searchResults li video{padding: 5px;float: left}
 #searchResults{padding: 0; margin: 0;}
-#searchResults .col-md-3{width: 24%} 
+#searchResults .col-md-3{width: 31%} 
+#searchVideos .col-md-8{width: 72.5%}
 #searchResults li p{padding: 5px 0px 0 0px; margin: 0; text-align: center}
 .pagination{margin: 0 0px 10px 0}
-.bigBtn{width: 80%;margin-left: 10%; margin-top: 20px;}
+.bigBtn{width: 70%;margin-left: 17%; margin-top: 20px;}
 .icon-fast-backward{display: none;}
 .icon-fast-forward{display: none;}
 .form-horizontal .form-group{margin-left: 0; margin-top: 0}
 #login label{width: 120px; font-size: 18px; font-weight: normal; font-family: arial;}
-#login{padding: 40px 0 30px 85px}
-#login .actionButtons{margin: 25px 0 0px 95px;}
-#login .alert{width: 200px;padding-left: 25px; margin-left: 30px}
+#login{padding: 40px 0 30px 0px}
+#login .actionButtons{margin: 25px 0 0px 140px;}
+#login .actionButtons button{width: 50%}
+#login .alert{width: 200px;padding-left: 25px; margin-left: 115px}
 .tooltip{opacity: 1; float: right; display: none; position: relative; left: -25px;}
+#login input{width: 80%; margin-left:40px}

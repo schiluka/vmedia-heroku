@@ -1,0 +1,46 @@
+<div ng-controller='videoController' id='searchVideos'>
+	<h4>Search Videos</h4>
+	<div class='pageContent row zeroMargin'>
+		<div class='col-md-12 row'>
+            <div class='col-md-8 well' ng-show='showResults'>
+                    <h4>Search Results</h4>
+                        <div ng-show="resultsFound !== 0" >
+                            <div class="results_status_text pull-left" style='margin-left: 10px; margin-top: 10px;'>
+                                <strong>{{fullrecordsSet}}</strong> results found.
+                            </div>
+                            <pagination data-boundary-links="true" data-num-pages="noOfPages" 
+                                        data-current-page="currentPage" max-size="maxSize" class="pagination-small" 
+                                        data-previous-text="&laquo;" data-next-text="&raquo;" data-src="pager">                                         </pagination>
+                        </div>
+                        <ul id='searchResults' class='row col-md-12' style='list-style-type: none; clear:both'>
+                            <li class='col-md-3' ng-repeat='v in videoData | filter:search | startFrom:(currentPage-                                        1)*entryLimit | limitTo:entryLimit'>
+                                <p>{{v.fileName}}</p>
+                                <video style='padding-left: 0' videoId={{v.videoId}} width="215" height="150" controls>
+                                    <source src="{{v.boxLink}}" type="video/mp4">
+                                </video>
+                            </li>
+                        </ul>
+            </div>
+            <div class='col-md-3 well pull-right'>
+                <div class="alert alert-warning" ng-show="selectOneSearchField">
+				<p>Please select one category.</p>
+			</div>
+			<form role="form" id='searchVideo'>
+				<div class="form-group col-sm-6" ng-repeat="mySelect in selectVJSON">
+					<label for="exampleInputEmail1" class="control-label" style='display: inline; padding-bottom:                          3px;float: left'>{{mySelect.label}}:</label>
+					<div class="col-sm-12" style='padding: 0; clear: both'>
+						<select id='cf-{{mySelect.id}}' name='{{mySelect.label}}' class="form-control">
+							<option value="">Select</option>
+							<option ng-repeat='cc in mySelect.optionValues' value='{{cc.value}}'>{{cc.value}}                                    </option>
+						</select>
+					</div>
+				</div>
+				
+				<div class='actionButtons'>
+					<button id="btnLabel" ng-click='searchVideo()' class="btn btn-small btn-primary pull-right                             mLeft" data-original-title="">Search</button>
+				</div> 			
+			</form>
+            </div>
+        </div>
+	</div>
+</div>

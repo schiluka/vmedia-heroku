@@ -1,7 +1,8 @@
 import peewee as pw
 from peewee import *
 
-myDB = pw.MySQLDatabase("heroku_8910e417098409f", host="us-cdbr-east-04.cleardb.com", port=3306, user="b62fe7ad88c524", passwd="c7077d2c")
+myDB = pw.MySQLDatabase("heroku_8910e417098409f", host="us-cdbr-east-04.cleardb.com",
+                        port=3306, user="b62fe7ad88c524", passwd="c7077d2c")
 
 class User(Model):
     username = CharField()

@@ -8,10 +8,10 @@ varsityframework.directive('pagination', ['paginationConfig', function(paginatio
 		      maxSize: '=',
 		      onSelectPage: '&'
 		    },
-		    templateUrl: './pagination.html',
+		    templateUrl: '../../../static/partials/pagination.html',
 		    replace: true,
 		    link: function(scope, element, attrs) {
-		    	
+
 		      // Setup configuration parameters
 		      var boundaryLinks = angular.isDefined(attrs.boundaryLinks) ? scope.$eval(attrs.boundaryLinks) : paginationConfig.boundaryLinks;
 		      var directionLinks = angular.isDefined(attrs.directionLinks) ? scope.$eval(attrs.directionLinks) : paginationConfig.directionLinks;
@@ -34,13 +34,13 @@ varsityframework.directive('pagination', ['paginationConfig', function(paginatio
 
 		      scope.$watch('numPages + currentPage + maxSize', function() {
 		        scope.pages = [];
-		        
+
 		        // Default page limits
 		        var startPage = 1, endPage = scope.numPages;
 
 		        // recompute if maxSize
 		        if ( scope.maxSize && scope.maxSize < scope.numPages ) {
-		        	
+
 		        	//alert("scope.maxSize");
 		          startPage = Math.max(scope.currentPage - Math.floor(scope.maxSize/2), 1);
 		          endPage   = startPage + scope.maxSize - 1;
@@ -92,10 +92,10 @@ varsityframework.directive('pagination', ['paginationConfig', function(paginatio
 		      };
 
 		      scope.selectPage = function(page) {
-		    	  
-		    	 
+
+
 		    	 if ( ! scope.isActive(page) && page > 0 && page <= scope.numPages) {
-		        	
+
 		          scope.currentPage = page;
 		          scope.onSelectPage({ page: page });
 		        }

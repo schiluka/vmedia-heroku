@@ -186,13 +186,19 @@ def saveVideo():
         #Get all the label ids here#
         labels = record['labels']
         videoId = record['videoId']
-        commaLabelIds = ""
+        labelArray = []
+        #for k,v in sorted(label,key=itemgetter('year')):
+        #    print k, v
         for record in labels:
             oneLabel = Label.select().where((Label.category == record['name'])
                                & (Label.label == record['value'])).get()
-            commaLabelIds = commaLabelIds + str(oneLabel.labelId) + ','
+            #commaLabelIds = commaLabelIds + str(oneLabel.labelId) + ','
+            labelArray.append(str(oneLabel.labelId))
+
         video = Video.select().where(Video.videoId == videoId).get()
-        video.labelIds = commaLabelIds[:-1]
+        labelArray.sort()
+        csvLabels = ",".join([str(x) for x in labelArray])
+        video.labelIds = csvLabels   #commaLabelIds[:-1]
         video.status = 'Y'
         video.save()
         myDB.close()
@@ -324,6 +330,42 @@ def logout():
 
 # OAuth 2 Methods
 
+@app.route('/searchVideos', methods=['POST'])
+#@requires_auth
+def searchVideos():
+    videos = []
+    #Subject.name ** ('%' + keyword + '%'),
+    myDB.connect()
+    try:
+        record = json.loads(request.data)
+        labels = record['labels']
+        labelArray = []
+        for record in labels:
+            oneLabel = Label.select().where((Label.category == record['name'])
+                               & (Label.label == record['value'])).get()
+            #commaLabelIds = commaLabelIds + str(oneLabel.labelId) + ','
+            labelArray.append(str(oneLabel.labelId))
+
+        labelArray.sort()
+        csvLabels = ",".join([str(x) for x in labelArray])
+
+        #for record in Video.select().where(Video.status == 'N').get():
+        for record in Video.select().where(Video.labelIds ** ('%' + csvLabels + '%')):
+            videos.append({'videoId':record.videoId, 'fileName':record.fileName,
+                       'folderName':record.folderName, 'boxLink':record.boxLink})
+        #print videos
+    except Exception as e:
+        myDB.close()
+        print e
+        return 'Search Videos Error', 404
+    if len(videos) == 0:
+        return 'No Videos'
+    return jsonify(data=videos)
+    #try:
+    #    myDB.connect()
+
+
+#DUPLICATE METHOD - NOT USED
 @app.route('/getFileDetails')
 #@requires_auth
 def getFileDetails():

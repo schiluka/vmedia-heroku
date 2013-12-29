@@ -13,7 +13,7 @@ varsityframework.config(['$routeProvider', function($routeProvider){
 	});
 
 	$routeProvider.when('/videos', {
-		templateUrl : 'videos.html',
+		templateUrl : '../../../static/partials/videos.html',
 		controller : videoController
 	});
 
@@ -81,6 +81,7 @@ function HomeController($scope,$rootScope, $http){
 	var getVideosApi = '/getVideos'; // ------    /getVideos
 	var saveVideoLabelAPI = '/saveVideo'; // ------ /saveVideo
 	var saveLabelAPI = '/saveLabel';
+	var counter = 1;
 	callServerGETAPI(httpPromise, getLabelAPI, procesSearch);
 	callServerGETAPI(httpPromise, getVideosApi, procesVideos);
 
@@ -101,10 +102,10 @@ function HomeController($scope,$rootScope, $http){
 			auto: false,
 			scroll: {
 				onAfter : function(){
-					var $this = $("#heroCarousel");
-					var items = $this.triggerHandler("currentPosition");
-					$scope.currentvideoId = items + parseInt(1);
-
+					//var $this = $("#heroCarousel");
+					//var items = $this.triggerHandler("currentPosition");
+					//$scope.currentvideoId = items + parseInt(1);
+					$scope.currentvideoId = $("#heroCarousel li:first").find('video').attr('videoid');
 					$("#next2").addClass('disabled');
 					$('.toolTip').addClass('disabled');
 					$scope.saveLabelMsg = false;
@@ -112,9 +113,10 @@ function HomeController($scope,$rootScope, $http){
 					for(i=0; i <= $scope.selectJSON.length; i++){
 						$("#cf-" + i).val('');
 					}
-					if($scope.currentvideoId === $scope.totalVideos){
-
-							//callServerGETAPI(httpPromise, getVideosApi, procesNewVideosSet);
+					var pos = $("#heroCarousel").triggerHandler("currentPosition");
+                    pos = pos + parseInt(1);
+					if($scope.totalVideos == pos){
+                         callServerGETAPI(httpPromise, getVideosApi, procesNewVideosSet);
 					}
 				}
 			}
@@ -122,10 +124,13 @@ function HomeController($scope,$rootScope, $http){
 	}
 
 	function procesNewVideosSet(responseData){
-		$.each(responseData.videos, function(key, v){
-			$scope.vData.push(this);
-		});
-		$scope.totalVideos = $scope.vData.length;
+		setTimeout(function(){
+            $.each(responseData.results.videos, function(key, v){
+                $scope.vData.push(this);
+		      });
+		      $scope.totalVideos = responseData.results.videos.length;
+            counter++;
+        }, 1000);
 	}
 
 
@@ -244,11 +249,11 @@ function HomeController($scope,$rootScope, $http){
 	}
 
 	function procesSaveVideoLabel(responseData){
-		if(responseData == 'Label Saved'){
+		if(responseData != ''){
 			$scope.saveLabelMsg = true;
 			$("#next2").removeClass('disabled');
 			$('.toolTip').removeClass('disabled');
-			$('.saveLabelMsg').show();
+			$('.saveLabelMsg p').html(responseData).show();
 		}
 	}
 
